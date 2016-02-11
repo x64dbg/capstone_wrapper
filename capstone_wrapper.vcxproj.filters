@@ -52,5 +52,8 @@
     <ClInclude Include="capstone\xcore.h">
       <Filter>Header Files\capstone</Filter>
     </ClInclude>
+    <ClInclude Include="capstone\m68k.h">
+      <Filter>Header Files\capstone</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -140,6 +140,7 @@
     <ClInclude Include="capstone\arm.h" />
     <ClInclude Include="capstone\arm64.h" />
     <ClInclude Include="capstone\capstone.h" />
+    <ClInclude Include="capstone\m68k.h" />
     <ClInclude Include="capstone\mips.h" />
     <ClInclude Include="capstone\platform.h" />
     <ClInclude Include="capstone\ppc.h" />
