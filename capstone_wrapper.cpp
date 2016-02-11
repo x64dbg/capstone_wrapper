@@ -21,7 +21,7 @@ void Capstone::GlobalFinalize()
 
 Capstone::Capstone()
 {
-	mInstr = cs_malloc(mHandle);
+    mInstr = cs_malloc(mHandle);
     mSuccess = false;
 }
 
@@ -38,13 +38,13 @@ bool Capstone::Disassemble(size_t addr, const unsigned char data[MAX_DISASM_BUFF
 
 bool Capstone::Disassemble(size_t addr, const unsigned char* data, int size)
 {
-	if (!data)
-		return false;
+    if(!data)
+        return false;
 
-	size_t codeSize = size;
-	uint64_t addr64 = addr;
+    size_t codeSize = size;
+    uint64_t addr64 = addr;
 
-	return (mSuccess = cs_disasm_iter(mHandle, &data, &codeSize, &addr64, mInstr));
+    return (mSuccess = cs_disasm_iter(mHandle, &data, &codeSize, &addr64, mInstr));
 }
 
 const cs_insn* Capstone::GetInstr() const
