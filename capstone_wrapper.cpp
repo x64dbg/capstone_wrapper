@@ -2,25 +2,32 @@
 #include <windows.h>
 
 csh Capstone::mHandle = 0;
+bool Capstone::mInitialized = false;
 
 void Capstone::GlobalInitialize()
 {
+    if (!mInitialized)
+    {
+        mInitialized = true;
 #ifdef _WIN64
-    cs_open(CS_ARCH_X86, CS_MODE_64, &mHandle);
+        cs_open(CS_ARCH_X86, CS_MODE_64, &mHandle);
 #else //x86
-    cs_open(CS_ARCH_X86, CS_MODE_32, &mHandle);
+        cs_open(CS_ARCH_X86, CS_MODE_32, &mHandle);
 #endif //_WIN64
-    cs_option(mHandle, CS_OPT_DETAIL, CS_OPT_ON);
+        cs_option(mHandle, CS_OPT_DETAIL, CS_OPT_ON);
+    }
 }
 
 void Capstone::GlobalFinalize()
 {
     if(mHandle) //close handle
         cs_close(&mHandle);
+    mInitialized = false;
 }
 
 Capstone::Capstone()
 {
+    GlobalInitialize();
     mInstr = cs_malloc(mHandle);
     mSuccess = false;
 }

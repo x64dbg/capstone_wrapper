@@ -37,6 +37,7 @@ public:
 
 private:
     static csh mHandle;
+    static bool mInitialized;
     cs_insn* mInstr;
     bool mSuccess;
 };
