@@ -12,6 +12,7 @@ public:
     static void GlobalInitialize();
     static void GlobalFinalize();
     Capstone();
+    Capstone(const Capstone & capstone); //copy constructor
     ~Capstone();
     bool Disassemble(size_t addr, const unsigned char data[MAX_DISASM_BUFFER]);
     bool Disassemble(size_t addr, const unsigned char* data, int size);

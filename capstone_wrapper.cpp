@@ -32,6 +32,12 @@ Capstone::Capstone()
     mSuccess = false;
 }
 
+Capstone::Capstone(const Capstone & capstone)
+    : mInstr(cs_malloc(mHandle)),
+    mSuccess(false)
+{
+}
+
 Capstone::~Capstone()
 {
     if(mInstr) //free last disassembled instruction
