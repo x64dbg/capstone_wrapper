@@ -6,7 +6,7 @@ bool Capstone::mInitialized = false;
 
 void Capstone::GlobalInitialize()
 {
-    if (!mInitialized)
+    if(!mInitialized)
     {
         mInitialized = true;
 #ifdef _WIN64
@@ -34,7 +34,7 @@ Capstone::Capstone()
 
 Capstone::Capstone(const Capstone & capstone)
     : mInstr(cs_malloc(mHandle)),
-    mSuccess(false)
+      mSuccess(false)
 {
 }
 
