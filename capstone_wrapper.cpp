@@ -311,3 +311,28 @@ size_t Capstone::BranchDestination() const
     }
     return 0;
 }
+
+size_t Capstone::ResolveOpValue(int opindex, const std::function<size_t(x86_reg)> & resolveReg)
+{
+    size_t dest = 0;
+    const auto & op = x86().operands[opindex];
+    switch(op.type)
+    {
+    case X86_OP_IMM:
+        dest = size_t(op.imm);
+        break;
+    case X86_OP_REG:
+        dest = resolveReg(op.reg);
+        break;
+    case X86_OP_MEM:
+        dest = size_t(op.mem.disp);
+        if(op.mem.base == X86_REG_RIP) //rip-relative
+            dest += Size();
+        else
+            dest += resolveReg(op.mem.base) + resolveReg(op.mem.index) * op.mem.scale;
+        break;
+    default:
+        break;
+    }
+    return dest;
+}

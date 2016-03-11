@@ -3,6 +3,7 @@
 
 #include "capstone/capstone.h"
 #include <string>
+#include <functional>
 
 #define MAX_DISASM_BUFFER 16
 
@@ -35,6 +36,7 @@ public:
     std::string Mnemonic() const;
     const char* MemSizeName(int size) const;
     size_t BranchDestination() const;
+    size_t ResolveOpValue(int opindex, const std::function<size_t(x86_reg)> & resolveReg);
 
 private:
     static csh mHandle;
