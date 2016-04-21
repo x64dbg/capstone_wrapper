@@ -312,7 +312,7 @@ size_t Capstone::BranchDestination() const
     return 0;
 }
 
-size_t Capstone::ResolveOpValue(int opindex, const std::function<size_t(x86_reg)> & resolveReg)
+size_t Capstone::ResolveOpValue(int opindex, const std::function<size_t(x86_reg)> & resolveReg) const
 {
     size_t dest = 0;
     const auto & op = x86().operands[opindex];
