@@ -272,6 +272,13 @@ std::string Capstone::Mnemonic() const
     return mInstr->mnemonic;
 }
 
+std::string Capstone::MnemonicId() const
+{
+    if(!Success())
+        return "???";
+    return cs_insn_name(mHandle, GetId());
+}
+
 const char* Capstone::MemSizeName(int size) const
 {
     switch(size)

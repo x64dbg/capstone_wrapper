@@ -34,6 +34,7 @@ public:
     bool IsNop() const;
     bool IsInt3() const;
     std::string Mnemonic() const;
+    std::string MnemonicId() const;
     const char* MemSizeName(int size) const;
     size_t BranchDestination() const;
     size_t ResolveOpValue(int opindex, const std::function<size_t(x86_reg)> & resolveReg) const;
