@@ -81,6 +81,16 @@ bool Capstone::InGroup(cs_group_type group) const
 {
     if(!Success())
         return false;
+    if(group == CS_GRP_PRIVILEGE)
+    {
+        auto id = GetId();
+        // I/O instructions
+        if (id == X86_INS_OUT || id == X86_INS_OUTSB || id == X86_INS_OUTSD || id == X86_INS_OUTSW
+            || id == X86_INS_IN || id == X86_INS_INSB || id == X86_INS_INSD || id == X86_INS_INSW
+        // system instructions
+            || id == X86_INS_RDMSR || id == X86_INS_SMSW)
+            return true;
+    }
     return cs_insn_group(mHandle, mInstr, group);
 }
 
@@ -244,7 +254,83 @@ cs_x86_op Capstone::operator[](int index) const
 
 bool Capstone::IsNop() const
 {
-    return GetId() == X86_INS_NOP;
+    if (!Success())
+        return false;
+    cs_x86_op op;
+    switch (GetId())
+    {
+    case X86_INS_NOP:
+    case X86_INS_PAUSE:
+    case X86_INS_FNOP:
+        // nop
+        return true;
+    case X86_INS_MOV:
+    case X86_INS_CMOVA:
+    case X86_INS_CMOVAE:
+    case X86_INS_CMOVB:
+    case X86_INS_CMOVBE:
+    case X86_INS_CMOVE:
+    case X86_INS_CMOVNE:
+    case X86_INS_CMOVG:
+    case X86_INS_CMOVGE:
+    case X86_INS_CMOVL:
+    case X86_INS_CMOVLE:
+    case X86_INS_CMOVO:
+    case X86_INS_CMOVNO:
+    case X86_INS_CMOVP:
+    case X86_INS_CMOVNP:
+    case X86_INS_CMOVS:
+    case X86_INS_CMOVNS:
+    case X86_INS_MOVAPS:
+    case X86_INS_MOVAPD:
+    case X86_INS_MOVUPS:
+    case X86_INS_MOVUPD:
+    case X86_INS_XCHG:
+        // mov edi, edi
+        return (x86().operands[0].type == X86_OP_REG && x86().operands[1].type == X86_OP_REG && x86().operands[0].reg == x86().operands[1].reg);
+    case X86_INS_LEA:
+        // lea eax, [eax + 0]
+        op = x86().operands[1];
+        return (op.type == X86_OP_MEM && op.mem.index == X86_OP_INVALID && op.mem.disp == 0 && op.mem.base == x86().operands[0].reg);
+    case X86_INS_JMP:
+    case X86_INS_JA:
+    case X86_INS_JAE:
+    case X86_INS_JB:
+    case X86_INS_JBE:
+    case X86_INS_JE:
+    case X86_INS_JNE:
+    case X86_INS_JG:
+    case X86_INS_JGE:
+    case X86_INS_JL:
+    case X86_INS_JLE:
+    case X86_INS_JO:
+    case X86_INS_JNO:
+    case X86_INS_JP:
+    case X86_INS_JNP:
+    case X86_INS_JS:
+    case X86_INS_JNS:
+    case X86_INS_JECXZ:
+    case X86_INS_JCXZ:
+    case X86_INS_LOOP:
+    case X86_INS_LOOPE:
+    case X86_INS_LOOPNE:
+        // jmp 0
+        op = x86().operands[0];
+        return (op.type == X86_OP_IMM && op.imm == 0);
+    case X86_INS_SHL:
+    case X86_INS_SHR:
+    case X86_INS_ROL:
+    case X86_INS_ROR:
+    case X86_INS_SAR:
+    case X86_INS_SAL:
+    case X86_INS_SHLD:
+    case X86_INS_SHRD:
+        // shl eax, 0
+        op = x86().operands[x86().op_count - 1];
+        return (op.type == X86_OP_IMM && op.imm == 0);
+    default:
+        return false;
+    }
 }
 
 bool Capstone::IsInt3() const
@@ -263,6 +349,14 @@ bool Capstone::IsInt3() const
     default:
         return false;
     }
+}
+
+bool Capstone::IsUnusual() const
+{
+    auto id = GetId();
+    return (InGroup(CS_GRP_PRIVILEGE) || InGroup(CS_GRP_IRET) || InGroup(CS_GRP_INVALID)
+        || id == X86_INS_RDTSC || id == X86_INS_SYSCALL || id == X86_INS_SYSENTER || id == X86_INS_CPUID || id == X86_INS_RDTSCP
+        || id == X86_INS_RDRAND || id == X86_INS_RDSEED);
 }
 
 std::string Capstone::Mnemonic() const
