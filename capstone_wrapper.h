@@ -27,6 +27,7 @@ public:
     const cs_x86 & x86() const;
     bool IsFilling() const;
     bool IsLoop() const;
+    bool IsUnusual() const;
     x86_insn GetId() const;
     std::string InstructionText() const;
     int OpCount() const;
