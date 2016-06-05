@@ -85,10 +85,10 @@ bool Capstone::InGroup(cs_group_type group) const
     {
         auto id = GetId();
         // I/O instructions
-        if (id == X86_INS_OUT || id == X86_INS_OUTSB || id == X86_INS_OUTSD || id == X86_INS_OUTSW
-            || id == X86_INS_IN || id == X86_INS_INSB || id == X86_INS_INSD || id == X86_INS_INSW
-        // system instructions
-            || id == X86_INS_RDMSR || id == X86_INS_SMSW)
+        if(id == X86_INS_OUT || id == X86_INS_OUTSB || id == X86_INS_OUTSD || id == X86_INS_OUTSW
+                || id == X86_INS_IN || id == X86_INS_INSB || id == X86_INS_INSD || id == X86_INS_INSW
+                // system instructions
+                || id == X86_INS_RDMSR || id == X86_INS_SMSW)
             return true;
     }
     return cs_insn_group(mHandle, mInstr, group);
@@ -254,10 +254,10 @@ cs_x86_op Capstone::operator[](int index) const
 
 bool Capstone::IsNop() const
 {
-    if (!Success())
+    if(!Success())
         return false;
     cs_x86_op op;
-    switch (GetId())
+    switch(GetId())
     {
     case X86_INS_NOP:
     case X86_INS_PAUSE:
@@ -355,8 +355,8 @@ bool Capstone::IsUnusual() const
 {
     auto id = GetId();
     return (InGroup(CS_GRP_PRIVILEGE) || InGroup(CS_GRP_IRET) || InGroup(CS_GRP_INVALID)
-        || id == X86_INS_RDTSC || id == X86_INS_SYSCALL || id == X86_INS_SYSENTER || id == X86_INS_CPUID || id == X86_INS_RDTSCP
-        || id == X86_INS_RDRAND || id == X86_INS_RDSEED);
+            || id == X86_INS_RDTSC || id == X86_INS_SYSCALL || id == X86_INS_SYSENTER || id == X86_INS_CPUID || id == X86_INS_RDTSCP
+            || id == X86_INS_RDRAND || id == X86_INS_RDSEED);
 }
 
 std::string Capstone::Mnemonic() const
