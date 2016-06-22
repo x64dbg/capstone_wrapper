@@ -46,18 +46,22 @@ Capstone::~Capstone()
 
 bool Capstone::Disassemble(size_t addr, const unsigned char data[MAX_DISASM_BUFFER])
 {
-    return Disassemble(addr, data, MAX_DISASM_BUFFER);
+    size_t codeSize = sizeof(data);
+    uint64_t addr64 = addr;
+    return mSuccess = cs_disasm_iter(mHandle, &data, &codeSize, &addr64, mInstr);
 }
 
 bool Capstone::Disassemble(size_t addr, const unsigned char* data, int size)
 {
     if(!data)
+    {
+        __debugbreak();
         return false;
-
-    size_t codeSize = size;
-    uint64_t addr64 = addr;
-
-    return (mSuccess = cs_disasm_iter(mHandle, &data, &codeSize, &addr64, mInstr));
+    }
+    unsigned char dataBuf[MAX_DISASM_BUFFER];
+    memset(dataBuf, 0, sizeof(dataBuf));
+    memcpy(dataBuf, data, min(size, sizeof(dataBuf)));
+    return Disassemble(addr, dataBuf);
 }
 
 const cs_insn* Capstone::GetInstr() const
