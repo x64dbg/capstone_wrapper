@@ -163,7 +163,6 @@ std::string Capstone::OperandText(int opindex) const
     }
     break;
 
-    case X86_OP_FP:
     case X86_OP_INVALID:
     {
     }
