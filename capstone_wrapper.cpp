@@ -302,8 +302,8 @@ bool Capstone::IsNop() const
         auto reg = ops[0].reg;
         auto mem = ops[1].mem;
         return ops[0].type == X86_OP_REG && ops[1].type == X86_OP_MEM && mem.disp == 0 &&
-            ((mem.index == X86_REG_INVALID && mem.base == reg) ||
-            (mem.index == reg && mem.base == X86_REG_INVALID && mem.scale == 1));
+               ((mem.index == X86_REG_INVALID && mem.base == reg) ||
+                (mem.index == reg && mem.base == X86_REG_INVALID && mem.scale == 1));
     }
     case X86_INS_JMP:
     case X86_INS_JA:
