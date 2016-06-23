@@ -31,7 +31,7 @@ public:
     x86_insn GetId() const;
     std::string InstructionText() const;
     int OpCount() const;
-    cs_x86_op operator[](int index) const;
+    const cs_x86_op & operator[](int index) const;
     bool IsNop() const;
     bool IsInt3() const;
     std::string Mnemonic() const;

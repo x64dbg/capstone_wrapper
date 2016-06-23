@@ -248,9 +248,9 @@ int Capstone::OpCount() const
     return x86().op_count;
 }
 
-cs_x86_op Capstone::operator[](int index) const
+const cs_x86_op & Capstone::operator[](int index) const
 {
-    if(!Success() || index >= OpCount())
+    if(!Success() || index < 0 || index >= OpCount())
         DebugBreak();
     return x86().operands[index];
 }
@@ -259,6 +259,7 @@ bool Capstone::IsNop() const
 {
     if(!Success())
         return false;
+    const auto & ops = x86().operands;
     cs_x86_op op;
     switch(GetId())
     {
@@ -290,11 +291,16 @@ bool Capstone::IsNop() const
     case X86_INS_MOVUPD:
     case X86_INS_XCHG:
         // mov edi, edi
-        return (x86().operands[0].type == X86_OP_REG && x86().operands[1].type == X86_OP_REG && x86().operands[0].reg == x86().operands[1].reg);
+        return ops[0].type == X86_OP_REG && ops[1].type == X86_OP_REG && ops[0].reg == ops[1].reg;
     case X86_INS_LEA:
+    {
         // lea eax, [eax + 0]
-        op = x86().operands[1];
-        return (op.type == X86_OP_MEM && op.mem.index == X86_OP_INVALID && op.mem.disp == 0 && op.mem.base == x86().operands[0].reg);
+        auto reg = ops[0].reg;
+        auto mem = ops[1].mem;
+        return ops[0].type == X86_OP_REG && ops[1].type == X86_OP_MEM && mem.disp == 0 &&
+            ((mem.index == X86_REG_INVALID && mem.base == reg) ||
+            (mem.index == reg && mem.base == X86_REG_INVALID && mem.scale == 1));
+    }
     case X86_INS_JMP:
     case X86_INS_JA:
     case X86_INS_JAE:
@@ -318,8 +324,8 @@ bool Capstone::IsNop() const
     case X86_INS_LOOPE:
     case X86_INS_LOOPNE:
         // jmp 0
-        op = x86().operands[0];
-        return (op.type == X86_OP_IMM && op.imm == 0);
+        op = ops[0];
+        return op.type == X86_OP_IMM && op.imm == 0;
     case X86_INS_SHL:
     case X86_INS_SHR:
     case X86_INS_ROL:
@@ -329,8 +335,8 @@ bool Capstone::IsNop() const
     case X86_INS_SHLD:
     case X86_INS_SHRD:
         // shl eax, 0
-        op = x86().operands[x86().op_count - 1];
-        return (op.type == X86_OP_IMM && op.imm == 0);
+        op = ops[OpCount() - 1];
+        return op.type == X86_OP_IMM && op.imm == 0;
     default:
         return false;
     }
