@@ -259,6 +259,30 @@ const cs_x86_op & Capstone::operator[](int index) const
     return x86().operands[index];
 }
 
+static bool isSafe64NopRegOp(const cs_x86_op & op)
+{
+    if(op.type != X86_OP_REG)
+        return true; //a non-register is safe
+#ifdef _WIN64
+    switch(op.reg)
+    {
+    case X86_REG_EAX:
+    case X86_REG_EBX:
+    case X86_REG_ECX:
+    case X86_REG_EDX:
+    case X86_REG_EBP:
+    case X86_REG_ESP:
+    case X86_REG_ESI:
+    case X86_REG_EDI:
+        return false; //32 bit register modifications clear the high part of the 64 bit register
+    default:
+        return true; //all other registers are safe
+    }
+#else
+    return true;
+#endif //_WIN64
+}
+
 bool Capstone::IsNop() const
 {
     if(!Success())
@@ -295,7 +319,7 @@ bool Capstone::IsNop() const
     case X86_INS_MOVUPD:
     case X86_INS_XCHG:
         // mov edi, edi
-        return ops[0].type == X86_OP_REG && ops[1].type == X86_OP_REG && ops[0].reg == ops[1].reg;
+        return ops[0].type == X86_OP_REG && ops[1].type == X86_OP_REG && ops[0].reg == ops[1].reg && isSafe64NopRegOp(ops[0]);
     case X86_INS_LEA:
     {
         // lea eax, [eax + 0]
@@ -303,7 +327,7 @@ bool Capstone::IsNop() const
         auto mem = ops[1].mem;
         return ops[0].type == X86_OP_REG && ops[1].type == X86_OP_MEM && mem.disp == 0 &&
                ((mem.index == X86_REG_INVALID && mem.base == reg) ||
-                (mem.index == reg && mem.base == X86_REG_INVALID && mem.scale == 1));
+                (mem.index == reg && mem.base == X86_REG_INVALID && mem.scale == 1)) && isSafe64NopRegOp(ops[0]);
     }
     case X86_INS_JMP:
     case X86_INS_JA:
@@ -336,11 +360,14 @@ bool Capstone::IsNop() const
     case X86_INS_ROR:
     case X86_INS_SAR:
     case X86_INS_SAL:
+        // shl eax, 0
+        op = ops[1];
+        return op.type == X86_OP_IMM && op.imm == 0 && isSafe64NopRegOp(ops[0]);
     case X86_INS_SHLD:
     case X86_INS_SHRD:
-        // shl eax, 0
-        op = ops[OpCount() - 1];
-        return op.type == X86_OP_IMM && op.imm == 0;
+        // shld eax, ebx, 0
+        op = ops[2];
+        return op.type == X86_OP_IMM && op.imm == 0 && isSafe64NopRegOp(ops[0]) && isSafe64NopRegOp(ops[1]);
     default:
         return false;
     }
