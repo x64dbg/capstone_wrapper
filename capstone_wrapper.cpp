@@ -64,7 +64,7 @@ bool Capstone::DisassembleSafe(size_t addr, const unsigned char* data, int size)
 {
     unsigned char dataSafe[MAX_DISASM_BUFFER];
     memset(dataSafe, 0, sizeof(dataSafe));
-    memcpy(dataSafe, data, min(MAX_DISASM_BUFFER, size));
+    memcpy(dataSafe, data, min(MAX_DISASM_BUFFER, size_t(size)));
     return Disassemble(addr, dataSafe);
 }
 
