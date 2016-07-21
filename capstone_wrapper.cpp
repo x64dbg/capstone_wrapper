@@ -429,8 +429,12 @@ const char* Capstone::MemSizeName(int size) const
         return "qword";
     case 10:
         return "tword";
+    case 14:
+        return "m14";
     case 16:
         return "dqword";
+    case 28:
+        return "m28";
     case 32:
         return "yword";
     case 64:
