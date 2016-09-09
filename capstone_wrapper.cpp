@@ -432,7 +432,7 @@ const char* Capstone::MemSizeName(int size) const
     case 14:
         return "m14";
     case 16:
-        return "dqword";
+        return "xmmword";
     case 28:
         return "m28";
     case 32:
