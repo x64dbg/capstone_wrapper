@@ -396,7 +396,7 @@ bool Capstone::IsUnusual() const
     auto id = GetId();
     return (InGroup(CS_GRP_PRIVILEGE) || InGroup(CS_GRP_IRET) || InGroup(CS_GRP_INVALID)
             || id == X86_INS_RDTSC || id == X86_INS_SYSCALL || id == X86_INS_SYSENTER || id == X86_INS_CPUID || id == X86_INS_RDTSCP
-            || id == X86_INS_RDRAND || id == X86_INS_RDSEED);
+            || id == X86_INS_RDRAND || id == X86_INS_RDSEED || id == X86_INS_UD2 || id == X86_INS_UD2B);
 }
 
 std::string Capstone::Mnemonic() const
