@@ -451,7 +451,7 @@ size_t Capstone::BranchDestination() const
     if(InGroup(CS_GRP_JUMP) || InGroup(CS_GRP_CALL) || IsLoop())
     {
         const auto & op = x86().operands[0];
-        if(op.type == CS_OP_IMM)
+        if(op.type == X86_OP_IMM)
             return size_t(op.imm);
     }
     return 0;
