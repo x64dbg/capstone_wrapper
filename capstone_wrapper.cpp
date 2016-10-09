@@ -489,7 +489,7 @@ bool Capstone::IsBranchGoingToExecute(size_t cflags, size_t ccx) const
     auto bZF = (cflags & (1 << 6)) != 0;
     auto bSF = (cflags & (1 << 7)) != 0;
     auto bOF = (cflags & (1 << 11)) != 0;
-    switch (GetId())
+    switch(GetId())
     {
     case X86_INS_CALL:
     case X86_INS_LJMP:
