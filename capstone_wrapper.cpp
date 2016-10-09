@@ -481,3 +481,66 @@ size_t Capstone::ResolveOpValue(int opindex, const std::function<size_t(x86_reg)
     }
     return dest;
 }
+
+bool Capstone::IsBranchGoingToExecute(size_t cflags, size_t ccx) const
+{
+    auto bCF = (cflags & (1 << 0)) != 0;
+    auto bPF = (cflags & (1 << 2)) != 0;
+    auto bZF = (cflags & (1 << 6)) != 0;
+    auto bSF = (cflags & (1 << 7)) != 0;
+    auto bOF = (cflags & (1 << 11)) != 0;
+    switch (GetId())
+    {
+    case X86_INS_CALL:
+    case X86_INS_LJMP:
+    case X86_INS_JMP:
+    case X86_INS_RET:
+    case X86_INS_RETF:
+    case X86_INS_RETFQ:
+        return true;
+    case X86_INS_JAE:
+        return !bCF;
+    case X86_INS_JA:
+        return !bCF && !bZF;
+    case X86_INS_JBE:
+        return bCF && bZF;
+    case X86_INS_JB:
+        return bCF;
+    case X86_INS_JCXZ:
+    case X86_INS_JECXZ:
+    case X86_INS_JRCXZ:
+        return ccx == 0;
+    case X86_INS_JE:
+        return bZF;
+    case X86_INS_JGE:
+        return bSF == bOF;
+    case X86_INS_JG:
+        return !bZF && bSF == bOF;
+    case X86_INS_JLE:
+        return bZF || bSF != bOF;
+    case X86_INS_JL:
+        return bSF != bOF;
+    case X86_INS_JNE:
+        return !bZF;
+    case X86_INS_JNO:
+        return !bOF;
+    case X86_INS_JNP:
+        return !bPF;
+    case X86_INS_JNS:
+        return !bSF;
+    case X86_INS_JO:
+        return bOF;
+    case X86_INS_JP:
+        return bPF;
+    case X86_INS_JS:
+        return bSF;
+    case X86_INS_LOOP:
+        return ccx != 0;
+    case X86_INS_LOOPE:
+        return ccx != 0 && bZF;
+    case X86_INS_LOOPNE:
+        return ccx != 0 && !bZF;
+    default:
+        return false;
+    }
+}

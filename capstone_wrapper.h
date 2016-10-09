@@ -40,6 +40,7 @@ public:
     const char* MemSizeName(int size) const;
     size_t BranchDestination() const;
     size_t ResolveOpValue(int opindex, const std::function<size_t(x86_reg)> & resolveReg) const;
+    bool IsBranchGoingToExecute(size_t cflags, size_t ccx) const;
 
 private:
     static csh mHandle;
