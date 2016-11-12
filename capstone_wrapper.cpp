@@ -513,13 +513,13 @@ bool Capstone::IsBranchGoingToExecute(size_t cflags, size_t ccx) const
     case X86_INS_JE:
         return bZF;
     case X86_INS_JGE:
-        return bSF == bOF || bZF;
+        return bSF == bOF;
     case X86_INS_JG:
         return !bZF && bSF == bOF;
     case X86_INS_JLE:
         return bZF || bSF != bOF;
     case X86_INS_JL:
-        return bSF != bOF && !bZF;
+        return bSF != bOF;
     case X86_INS_JNE:
         return !bZF;
     case X86_INS_JNO:
