@@ -353,7 +353,7 @@ bool Capstone::IsNop() const
     case X86_INS_LOOPNE:
         // jmp 0
         op = ops[0];
-        return op.type == X86_OP_IMM && op.imm == 0;
+        return op.type == X86_OP_IMM && op.imm == this->Address() + this->Size();
     case X86_INS_SHL:
     case X86_INS_SHR:
     case X86_INS_ROL:
@@ -503,7 +503,7 @@ bool Capstone::IsBranchGoingToExecute(size_t cflags, size_t ccx) const
     case X86_INS_JA:
         return !bCF && !bZF;
     case X86_INS_JBE:
-        return bCF && bZF;
+        return bCF || bZF;
     case X86_INS_JB:
         return bCF;
     case X86_INS_JCXZ:
