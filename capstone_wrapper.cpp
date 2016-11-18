@@ -348,9 +348,6 @@ bool Capstone::IsNop() const
     case X86_INS_JNS:
     case X86_INS_JECXZ:
     case X86_INS_JCXZ:
-    case X86_INS_LOOP:
-    case X86_INS_LOOPE:
-    case X86_INS_LOOPNE:
         // jmp 0
         op = ops[0];
         return op.type == X86_OP_IMM && op.imm == this->Address() + this->Size();
