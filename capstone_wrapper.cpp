@@ -347,6 +347,7 @@ bool Capstone::IsNop() const
     case X86_INS_JS:
     case X86_INS_JNS:
     case X86_INS_JECXZ:
+    case X86_INS_JRCXZ:
     case X86_INS_JCXZ:
         // jmp 0
         op = ops[0];
