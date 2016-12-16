@@ -57,7 +57,36 @@ bool Capstone::Disassemble(size_t addr, const unsigned char* data, int size)
     size_t codeSize = size;
     uint64_t addr64 = addr;
 
-    return (mSuccess = cs_disasm_iter(mHandle, &data, &codeSize, &addr64, mInstr));
+    mSuccess = cs_disasm_iter(mHandle, &data, &codeSize, &addr64, mInstr);
+
+    //Nasty workaround for https://github.com/aquynh/capstone/issues/702
+    if(mSuccess && GetId() == X86_INS_TEST && x86().op_count == 2 && x86().operands[0].type == X86_OP_REG && x86().operands[1].type == X86_OP_REG)
+    {
+        std::swap(mInstr->detail->x86.operands[0], mInstr->detail->x86.operands[1]);
+        char* opstr = mInstr->op_str;
+        auto commasp = strstr(opstr, ", ");
+        if(commasp)
+        {
+            *commasp = '\0';
+            char second[32] = "";
+            strcpy_s(second, commasp + 2);
+            auto firstsp = commasp;
+            while(firstsp >= opstr && *firstsp != ' ')
+                firstsp--;
+            if(firstsp != opstr)
+            {
+                firstsp++;
+                char first[32] = "";
+                strcpy_s(first, firstsp);
+                *firstsp = '\0';
+                strcat_s(mInstr->op_str, second);
+                strcat_s(mInstr->op_str, ", ");
+                strcat_s(mInstr->op_str, first);
+            }
+        }
+    }
+
+    return mSuccess;
 }
 
 bool Capstone::DisassembleSafe(size_t addr, const unsigned char* data, int size)
