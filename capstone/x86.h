@@ -246,7 +246,6 @@ typedef struct x86_op_mem
 // Instruction operand
 typedef struct cs_x86_op
 {
-    x86_op_type type;   // operand type
     union
     {
         x86_reg reg;      // register value for REG operand
@@ -254,6 +253,8 @@ typedef struct cs_x86_op
         x86_op_mem mem;     // base/index/scale/disp value for MEM operand
     };
 
+    x86_op_type type;   // operand type
+    
     // size of this operand (in bytes).
     uint8_t size;
 

@@ -288,7 +288,6 @@ typedef struct ppc_op_crx
 // Instruction operand
 typedef struct cs_ppc_op
 {
-    ppc_op_type type;   // operand type
     union
     {
         ppc_reg reg;    // register value for REG operand
@@ -296,6 +295,7 @@ typedef struct cs_ppc_op
         ppc_op_mem mem;     // base/disp value for MEM operand
         ppc_op_crx crx;     // operand with condition register
     };
+    ppc_op_type type;   // operand type
 } cs_ppc_op;
 
 // Instruction structure
