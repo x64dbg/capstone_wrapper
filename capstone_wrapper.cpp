@@ -482,12 +482,17 @@ size_t Capstone::ResolveOpValue(int opindex, const std::function<size_t(x86_reg)
 
 bool Capstone::IsBranchGoingToExecute(size_t cflags, size_t ccx) const
 {
+    return IsBranchGoingToExecute(GetId(), cflags, ccx);
+}
+
+bool Capstone::IsBranchGoingToExecute(x86_insn id, size_t cflags, size_t ccx)
+{
     auto bCF = (cflags & (1 << 0)) != 0;
     auto bPF = (cflags & (1 << 2)) != 0;
     auto bZF = (cflags & (1 << 6)) != 0;
     auto bSF = (cflags & (1 << 7)) != 0;
     auto bOF = (cflags & (1 << 11)) != 0;
-    switch(GetId())
+    switch(id)
     {
     case X86_INS_CALL:
     case X86_INS_LJMP:
@@ -496,49 +501,148 @@ bool Capstone::IsBranchGoingToExecute(size_t cflags, size_t ccx) const
     case X86_INS_RETF:
     case X86_INS_RETFQ:
         return true;
-    case X86_INS_JAE:
+    case X86_INS_JAE: //jump short if above or equal
         return !bCF;
-    case X86_INS_JA:
+    case X86_INS_JA: //jump short if above
         return !bCF && !bZF;
-    case X86_INS_JBE:
+    case X86_INS_JBE: //jump short if below or equal/not above
         return bCF || bZF;
-    case X86_INS_JB:
+    case X86_INS_JB: //jump short if below/not above nor equal/carry
         return bCF;
-    case X86_INS_JCXZ:
-    case X86_INS_JECXZ:
-    case X86_INS_JRCXZ:
+    case X86_INS_JCXZ: //jump short if ecx register is zero
+    case X86_INS_JECXZ: //jump short if ecx register is zero
+    case X86_INS_JRCXZ: //jump short if rcx register is zero
         return ccx == 0;
-    case X86_INS_JE:
+    case X86_INS_JE: //jump short if equal
         return bZF;
-    case X86_INS_JGE:
+    case X86_INS_JGE: //jump short if greater or equal
         return bSF == bOF;
-    case X86_INS_JG:
+    case X86_INS_JG: //jump short if greater
         return !bZF && bSF == bOF;
-    case X86_INS_JLE:
+    case X86_INS_JLE: //jump short if less or equal/not greater
         return bZF || bSF != bOF;
-    case X86_INS_JL:
+    case X86_INS_JL: //jump short if less/not greater
         return bSF != bOF;
-    case X86_INS_JNE:
+    case X86_INS_JNE: //jump short if not equal/not zero
         return !bZF;
-    case X86_INS_JNO:
+    case X86_INS_JNO: //jump short if not overflow
         return !bOF;
-    case X86_INS_JNP:
+    case X86_INS_JNP: //jump short if not parity/parity odd
         return !bPF;
-    case X86_INS_JNS:
+    case X86_INS_JNS: //jump short if not sign
         return !bSF;
-    case X86_INS_JO:
+    case X86_INS_JO: //jump short if overflow
         return bOF;
-    case X86_INS_JP:
+    case X86_INS_JP: //jump short if parity/parity even
         return bPF;
-    case X86_INS_JS:
+    case X86_INS_JS: //jump short if sign
         return bSF;
-    case X86_INS_LOOP:
+    case X86_INS_LOOP: //decrement count; jump short if ecx!=0
         return ccx != 0;
-    case X86_INS_LOOPE:
+    case X86_INS_LOOPE: //decrement count; jump short if ecx!=0 and zf=1
         return ccx != 0 && bZF;
-    case X86_INS_LOOPNE:
+    case X86_INS_LOOPNE: //decrement count; jump short if ecx!=0 and zf=0
         return ccx != 0 && !bZF;
     default:
         return false;
+    }
+}
+
+bool Capstone::IsConditionalGoingToExecute(size_t cflags, size_t ccx) const
+{
+    return IsConditionalGoingToExecute(GetId(), cflags, ccx);
+}
+
+bool Capstone::IsConditionalGoingToExecute(x86_insn id, size_t cflags, size_t ccx)
+{
+    auto bCF = (cflags & (1 << 0)) != 0;
+    auto bPF = (cflags & (1 << 2)) != 0;
+    auto bZF = (cflags & (1 << 6)) != 0;
+    auto bSF = (cflags & (1 << 7)) != 0;
+    auto bOF = (cflags & (1 << 11)) != 0;
+    switch(id)
+    {
+    case X86_INS_CMOVA: //conditional move - above/not below nor equal 
+        return !bCF && !bZF;
+    case X86_INS_CMOVAE: //conditional move - above or equal/not below/not carry 
+        return !bCF;
+    case X86_INS_CMOVB: //conditional move - below/not above nor equal/carry 
+        return bCF;
+    case X86_INS_CMOVBE: //conditional move - below or equal/not above 
+        return bCF || bZF;
+    case X86_INS_CMOVE: //conditional move - equal/zero 
+        return bZF;
+    case X86_INS_CMOVG: //conditional move - greater/not less nor equal 
+        return !bZF && bSF == bOF;
+    case X86_INS_CMOVGE: //conditional move - greater or equal/not less 
+        return bSF == bOF;
+    case X86_INS_CMOVL: //conditional move - less/not greater nor equal 
+        return bSF != bOF;
+    case X86_INS_CMOVLE: //conditional move - less or equal/not greater 
+        return bZF || bSF != bOF;
+    case X86_INS_CMOVNE: //conditional move - not equal/not zero 
+        return !bZF;
+    case X86_INS_CMOVNO: //conditional move - not overflow 
+        return !bOF;
+    case X86_INS_CMOVNP: //conditional move - not parity/parity odd 
+        return !bPF;
+    case X86_INS_CMOVNS: //conditional move - not sign 
+        return !bSF;
+    case X86_INS_CMOVO: //conditional move - overflow 
+        return bOF;
+    case X86_INS_CMOVP: //conditional move - parity/parity even 
+        return bPF;
+    case X86_INS_CMOVS: //conditional move - sign 
+        return bSF;
+    case X86_INS_FCMOVBE: //fp conditional move - below or equal 
+        return bCF || bZF;
+    case X86_INS_FCMOVB: //fp conditional move - below 
+        return bCF;
+    case X86_INS_FCMOVE: //fp conditional move - equal 
+        return bZF;
+    case X86_INS_FCMOVNBE: //fp conditional move - not below or equal 
+        return !bCF && !bZF;
+    case X86_INS_FCMOVNB: //fp conditional move - not below 
+        return !bCF;
+    case X86_INS_FCMOVNE: //fp conditional move - not equal 
+        return !bZF;
+    case X86_INS_FCMOVNU: //fp conditional move - not unordered 
+        return !bPF;
+    case X86_INS_FCMOVU: //fp conditional move - unordered 
+        return bPF;
+    case X86_INS_SETA: //set byte on condition - above/not below nor equal 
+        return !bCF && !bZF;
+    case X86_INS_SETAE: //set byte on condition - above or equal/not below/not carry 
+        return !bCF;
+    case X86_INS_SETB: //set byte on condition - below/not above nor equal/carry 
+        return bCF;
+    case X86_INS_SETBE: //set byte on condition - below or equal/not above 
+        return bCF || bZF;
+    case X86_INS_SETE: //set byte on condition - equal/zero 
+        return bZF;
+    case X86_INS_SETG: //set byte on condition - greater/not less nor equal 
+        return !bZF && bSF == bOF;
+    case X86_INS_SETGE: //set byte on condition - greater or equal/not less 
+        return bSF == bOF;
+    case X86_INS_SETL: //set byte on condition - less/not greater nor equal 
+        return bSF != bOF;
+    case X86_INS_SETLE: //set byte on condition - less or equal/not greater 
+        return bZF || bSF != bOF;
+    case X86_INS_SETNE: //set byte on condition - not equal/not zero 
+        return !bZF;
+    case X86_INS_SETNO: //set byte on condition - not overflow 
+        return !bOF;
+    case X86_INS_SETNP: //set byte on condition - not parity/parity odd 
+        return !bPF;
+    case X86_INS_SETNS: //set byte on condition - not sign 
+        return !bSF;
+    case X86_INS_SETO: //set byte on condition - overflow 
+        return bOF;
+    case X86_INS_SETP: //set byte on condition - parity/parity even 
+        return bPF;
+    case X86_INS_SETS: //set byte on condition - sign 
+        return bSF;
+    default:
+        return true;
     }
 }
