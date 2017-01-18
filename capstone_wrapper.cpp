@@ -562,85 +562,85 @@ bool Capstone::IsConditionalGoingToExecute(x86_insn id, size_t cflags, size_t cc
     auto bOF = (cflags & (1 << 11)) != 0;
     switch(id)
     {
-    case X86_INS_CMOVA: //conditional move - above/not below nor equal 
+    case X86_INS_CMOVA: //conditional move - above/not below nor equal
         return !bCF && !bZF;
-    case X86_INS_CMOVAE: //conditional move - above or equal/not below/not carry 
+    case X86_INS_CMOVAE: //conditional move - above or equal/not below/not carry
         return !bCF;
-    case X86_INS_CMOVB: //conditional move - below/not above nor equal/carry 
+    case X86_INS_CMOVB: //conditional move - below/not above nor equal/carry
         return bCF;
-    case X86_INS_CMOVBE: //conditional move - below or equal/not above 
+    case X86_INS_CMOVBE: //conditional move - below or equal/not above
         return bCF || bZF;
-    case X86_INS_CMOVE: //conditional move - equal/zero 
+    case X86_INS_CMOVE: //conditional move - equal/zero
         return bZF;
-    case X86_INS_CMOVG: //conditional move - greater/not less nor equal 
+    case X86_INS_CMOVG: //conditional move - greater/not less nor equal
         return !bZF && bSF == bOF;
-    case X86_INS_CMOVGE: //conditional move - greater or equal/not less 
+    case X86_INS_CMOVGE: //conditional move - greater or equal/not less
         return bSF == bOF;
-    case X86_INS_CMOVL: //conditional move - less/not greater nor equal 
+    case X86_INS_CMOVL: //conditional move - less/not greater nor equal
         return bSF != bOF;
-    case X86_INS_CMOVLE: //conditional move - less or equal/not greater 
+    case X86_INS_CMOVLE: //conditional move - less or equal/not greater
         return bZF || bSF != bOF;
-    case X86_INS_CMOVNE: //conditional move - not equal/not zero 
+    case X86_INS_CMOVNE: //conditional move - not equal/not zero
         return !bZF;
-    case X86_INS_CMOVNO: //conditional move - not overflow 
+    case X86_INS_CMOVNO: //conditional move - not overflow
         return !bOF;
-    case X86_INS_CMOVNP: //conditional move - not parity/parity odd 
+    case X86_INS_CMOVNP: //conditional move - not parity/parity odd
         return !bPF;
-    case X86_INS_CMOVNS: //conditional move - not sign 
+    case X86_INS_CMOVNS: //conditional move - not sign
         return !bSF;
-    case X86_INS_CMOVO: //conditional move - overflow 
+    case X86_INS_CMOVO: //conditional move - overflow
         return bOF;
-    case X86_INS_CMOVP: //conditional move - parity/parity even 
+    case X86_INS_CMOVP: //conditional move - parity/parity even
         return bPF;
-    case X86_INS_CMOVS: //conditional move - sign 
+    case X86_INS_CMOVS: //conditional move - sign
         return bSF;
-    case X86_INS_FCMOVBE: //fp conditional move - below or equal 
+    case X86_INS_FCMOVBE: //fp conditional move - below or equal
         return bCF || bZF;
-    case X86_INS_FCMOVB: //fp conditional move - below 
+    case X86_INS_FCMOVB: //fp conditional move - below
         return bCF;
-    case X86_INS_FCMOVE: //fp conditional move - equal 
+    case X86_INS_FCMOVE: //fp conditional move - equal
         return bZF;
-    case X86_INS_FCMOVNBE: //fp conditional move - not below or equal 
+    case X86_INS_FCMOVNBE: //fp conditional move - not below or equal
         return !bCF && !bZF;
-    case X86_INS_FCMOVNB: //fp conditional move - not below 
+    case X86_INS_FCMOVNB: //fp conditional move - not below
         return !bCF;
-    case X86_INS_FCMOVNE: //fp conditional move - not equal 
+    case X86_INS_FCMOVNE: //fp conditional move - not equal
         return !bZF;
-    case X86_INS_FCMOVNU: //fp conditional move - not unordered 
+    case X86_INS_FCMOVNU: //fp conditional move - not unordered
         return !bPF;
-    case X86_INS_FCMOVU: //fp conditional move - unordered 
+    case X86_INS_FCMOVU: //fp conditional move - unordered
         return bPF;
-    case X86_INS_SETA: //set byte on condition - above/not below nor equal 
+    case X86_INS_SETA: //set byte on condition - above/not below nor equal
         return !bCF && !bZF;
-    case X86_INS_SETAE: //set byte on condition - above or equal/not below/not carry 
+    case X86_INS_SETAE: //set byte on condition - above or equal/not below/not carry
         return !bCF;
-    case X86_INS_SETB: //set byte on condition - below/not above nor equal/carry 
+    case X86_INS_SETB: //set byte on condition - below/not above nor equal/carry
         return bCF;
-    case X86_INS_SETBE: //set byte on condition - below or equal/not above 
+    case X86_INS_SETBE: //set byte on condition - below or equal/not above
         return bCF || bZF;
-    case X86_INS_SETE: //set byte on condition - equal/zero 
+    case X86_INS_SETE: //set byte on condition - equal/zero
         return bZF;
-    case X86_INS_SETG: //set byte on condition - greater/not less nor equal 
+    case X86_INS_SETG: //set byte on condition - greater/not less nor equal
         return !bZF && bSF == bOF;
-    case X86_INS_SETGE: //set byte on condition - greater or equal/not less 
+    case X86_INS_SETGE: //set byte on condition - greater or equal/not less
         return bSF == bOF;
-    case X86_INS_SETL: //set byte on condition - less/not greater nor equal 
+    case X86_INS_SETL: //set byte on condition - less/not greater nor equal
         return bSF != bOF;
-    case X86_INS_SETLE: //set byte on condition - less or equal/not greater 
+    case X86_INS_SETLE: //set byte on condition - less or equal/not greater
         return bZF || bSF != bOF;
-    case X86_INS_SETNE: //set byte on condition - not equal/not zero 
+    case X86_INS_SETNE: //set byte on condition - not equal/not zero
         return !bZF;
-    case X86_INS_SETNO: //set byte on condition - not overflow 
+    case X86_INS_SETNO: //set byte on condition - not overflow
         return !bOF;
-    case X86_INS_SETNP: //set byte on condition - not parity/parity odd 
+    case X86_INS_SETNP: //set byte on condition - not parity/parity odd
         return !bPF;
-    case X86_INS_SETNS: //set byte on condition - not sign 
+    case X86_INS_SETNS: //set byte on condition - not sign
         return !bSF;
-    case X86_INS_SETO: //set byte on condition - overflow 
+    case X86_INS_SETO: //set byte on condition - overflow
         return bOF;
-    case X86_INS_SETP: //set byte on condition - parity/parity even 
+    case X86_INS_SETP: //set byte on condition - parity/parity even
         return bPF;
-    case X86_INS_SETS: //set byte on condition - sign 
+    case X86_INS_SETS: //set byte on condition - sign
         return bSF;
     default:
         return true;
