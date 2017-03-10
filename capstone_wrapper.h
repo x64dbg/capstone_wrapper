@@ -30,7 +30,7 @@ public:
     bool IsLoop() const;
     bool IsUnusual() const;
     x86_insn GetId() const;
-    std::string InstructionText() const;
+    std::string InstructionText(bool replaceRipRelative = true) const;
     int OpCount() const;
     const cs_x86_op & operator[](int index) const;
     bool IsNop() const;

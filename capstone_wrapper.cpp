@@ -232,7 +232,7 @@ x86_insn Capstone::GetId() const
     return x86_insn(mInstr->id);
 }
 
-std::string Capstone::InstructionText() const
+std::string Capstone::InstructionText(bool replaceRipRelative) const
 {
     if(!Success())
         return "???";
@@ -241,6 +241,29 @@ std::string Capstone::InstructionText() const
     {
         result += " ";
         result += mInstr->op_str;
+    }
+    if(replaceRipRelative)
+    {
+        //replace [rip +/- 0x?] with the actual address
+        bool ripPlus = true;
+        auto found = result.find("[rip + ");
+        if(found == std::string::npos)
+        {
+            ripPlus = false;
+            found = result.find("[rip - ");
+        }
+        if(found != std::string::npos)
+        {
+            auto wVA = Address();
+            auto end = result.find("]", found);
+            auto ripStr = result.substr(found + 1, end - found - 1);
+            uint64_t offset;
+            sscanf_s(ripStr.substr(ripStr.rfind(' ') + 1).c_str(), "%llX", &offset);
+            auto dest = ripPlus ? (wVA + offset + Size()) : (wVA - offset + Size());
+            char buf[20];
+            sprintf_s(buf, "0x%llx", dest);
+            result.replace(found + 1, ripStr.length(), buf);
+        }
     }
     return result;
 }
