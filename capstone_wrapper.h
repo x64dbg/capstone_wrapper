@@ -44,7 +44,16 @@ public:
     static bool IsBranchGoingToExecute(x86_insn id, size_t cflags, size_t ccx);
     bool IsConditionalGoingToExecute(size_t cflags, size_t ccx) const;
     static bool IsConditionalGoingToExecute(x86_insn id, size_t cflags, size_t ccx);
-    void RegExplicitReadWrite(x86_reg read[32], x86_reg write[32]) const;
+    void RegInfo(uint8_t info[X86_REG_ENDING]) const;
+
+    enum RegInfoAccess
+    {
+        None = 0,
+        Read = 1 << 0,
+        Write = 1 << 1,
+        Implicit = 1 << 2,
+        Explicit = 1 << 3
+    };
 
 private:
     static csh mHandle;

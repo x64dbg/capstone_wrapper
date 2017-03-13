@@ -670,10 +670,11 @@ bool Capstone::IsConditionalGoingToExecute(x86_insn id, size_t cflags, size_t cc
     }
 }
 
-void Capstone::RegExplicitReadWrite(x86_reg read[32], x86_reg write[32]) const
+void Capstone::RegInfo(uint8_t regs[X86_REG_ENDING]) const
 {
-#define add(arr, ct, val) if(val != X86_REG_INVALID) arr[ct++] = val
-    int ri = 0, wi = 0;
+    memset(regs, 0, sizeof(uint8_t) * X86_REG_ENDING);
+    if(!Success() || IsNop())
+        return;
     for(int i = 0; i < OpCount(); i++)
     {
         const auto & op = x86().operands[i];
@@ -681,9 +682,9 @@ void Capstone::RegExplicitReadWrite(x86_reg read[32], x86_reg write[32]) const
         {
         case X86_OP_REG:
             if((op.access & CS_AC_READ) == CS_AC_READ)
-                add(read, ri, op.reg);
+                regs[op.reg] |= Read | Explicit;
             if((op.access & CS_AC_WRITE) == CS_AC_WRITE)
-                add(write, wi, op.reg);
+                regs[op.reg] |= Write | Explicit;
             break;
 
         case X86_OP_MEM:
@@ -699,17 +700,17 @@ void Capstone::RegExplicitReadWrite(x86_reg read[32], x86_reg write[32]) const
                 case X86_REG_ESP:
                 case X86_REG_EBP:
 #endif //_WIN64
-                    add(read, ri, X86_REG_SS);
+                    regs[X86_REG_SS] |= Read | Explicit;
                     break;
                 default:
-                    add(read, ri, X86_REG_DS);
+                    regs[X86_REG_DS] |= Read | Explicit;
                     break;
                 }
             }
             else
-                add(read, ri, op.mem.segment);
-            add(read, ri, op.mem.base);
-            add(read, ri, op.mem.index);
+                regs[op.mem.segment] |= Read | Explicit;
+            regs[op.mem.base] |= Read | Explicit;
+            regs[op.mem.index] |= Read | Explicit;
         }
         break;
 
@@ -717,7 +718,9 @@ void Capstone::RegExplicitReadWrite(x86_reg read[32], x86_reg write[32]) const
             break;
         }
     }
-    read[ri] = X86_REG_INVALID;
-    write[wi] = X86_REG_INVALID;
-#undef add
+    const cs_detail* detail = GetInstr()->detail;
+    for(uint8_t i = 0; i < detail->regs_read_count; i++)
+        regs[detail->regs_read[i]] |= Read | Implicit;
+    for(uint8_t i = 0; i < detail->regs_write_count; i++)
+        regs[detail->regs_write[i]] |= Write | Implicit;
 }
