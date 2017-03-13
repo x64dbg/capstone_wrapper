@@ -793,21 +793,33 @@ void Capstone::FlagInfo(uint8_t info[FLAG_ENDING]) const
 #undef setFlagInfo
 }
 
-const char * Capstone::FlagName(Flag flag) const
+const char* Capstone::FlagName(Flag flag) const
 {
     switch(flag)
     {
-    case FLAG_AF: return "AF";
-    case FLAG_CF: return "CF";
-    case FLAG_SF: return "SF";
-    case FLAG_ZF: return "ZF";
-    case FLAG_PF: return "PF";
-    case FLAG_OF: return "OF";
-    case FLAG_TF: return "TF";
-    case FLAG_IF: return "IF";
-    case FLAG_DF: return "DF";
-    case FLAG_NT: return "NT";
-    case FLAG_RF: return "RF";
-    default: return nullptr;
+    case FLAG_AF:
+        return "AF";
+    case FLAG_CF:
+        return "CF";
+    case FLAG_SF:
+        return "SF";
+    case FLAG_ZF:
+        return "ZF";
+    case FLAG_PF:
+        return "PF";
+    case FLAG_OF:
+        return "OF";
+    case FLAG_TF:
+        return "TF";
+    case FLAG_IF:
+        return "IF";
+    case FLAG_DF:
+        return "DF";
+    case FLAG_NT:
+        return "NT";
+    case FLAG_RF:
+        return "RF";
+    default:
+        return nullptr;
     }
 }

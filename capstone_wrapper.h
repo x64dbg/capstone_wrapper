@@ -44,7 +44,7 @@ public:
     static bool IsBranchGoingToExecute(x86_insn id, size_t cflags, size_t ccx);
     bool IsConditionalGoingToExecute(size_t cflags, size_t ccx) const;
     static bool IsConditionalGoingToExecute(x86_insn id, size_t cflags, size_t ccx);
-    
+
     enum RegInfoAccess
     {
         None = 0,
@@ -80,7 +80,7 @@ public:
         Test = 1 << 4,
         Undefined = 1 << 5
     };
-    
+
     void RegInfo(uint8_t info[X86_REG_ENDING]) const;
     void FlagInfo(uint8_t info[FLAG_ENDING]) const;
     const char* FlagName(Flag flag) const;
