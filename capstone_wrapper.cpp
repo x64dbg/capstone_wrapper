@@ -723,11 +723,10 @@ void Capstone::RegInfo(uint8_t regs[X86_REG_ENDING]) const
         regs[detail->regs_read[i]] |= Read | Implicit;
     for(uint8_t i = 0; i < detail->regs_write_count; i++)
         regs[detail->regs_write[i]] |= Write | Implicit;
-    if(InGroup(CS_GRP_CALL) || InGroup(CS_GRP_RET) || InGroup(CS_GRP_JUMP) || IsLoop())
 #ifdef _WIN64
-        regs[X86_REG_RIP] = Write | Implicit;
+    regs[X86_REG_RIP] = None;
 #else //x86
-        regs[X86_REG_EIP] = Write | Implicit;
+    regs[X86_REG_EIP] = None;
 #endif //_WIN64
 }
 
