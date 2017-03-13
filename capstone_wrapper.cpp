@@ -730,3 +730,84 @@ void Capstone::RegInfo(uint8_t regs[X86_REG_ENDING]) const
         regs[X86_REG_EIP] = Write | Implicit;
 #endif //_WIN64
 }
+
+void Capstone::FlagInfo(uint8_t info[FLAG_ENDING]) const
+{
+    memset(info, 0, sizeof(uint8_t) * FLAG_ENDING);
+    if(!Success())
+        return;
+    auto eflags = x86().eflags;
+#define setFlagInfo(flag, access, test) info[flag] |= (eflags & test) == test ? access : 0
+    //Write
+    setFlagInfo(FLAG_AF, Modify, X86_EFLAGS_MODIFY_AF);
+    setFlagInfo(FLAG_CF, Modify, X86_EFLAGS_MODIFY_CF);
+    setFlagInfo(FLAG_SF, Modify, X86_EFLAGS_MODIFY_SF);
+    setFlagInfo(FLAG_ZF, Modify, X86_EFLAGS_MODIFY_ZF);
+    setFlagInfo(FLAG_PF, Modify, X86_EFLAGS_MODIFY_PF);
+    setFlagInfo(FLAG_OF, Modify, X86_EFLAGS_MODIFY_OF);
+    setFlagInfo(FLAG_TF, Modify, X86_EFLAGS_MODIFY_TF);
+    setFlagInfo(FLAG_IF, Modify, X86_EFLAGS_MODIFY_IF);
+    setFlagInfo(FLAG_DF, Modify, X86_EFLAGS_MODIFY_DF);
+    setFlagInfo(FLAG_NT, Modify, X86_EFLAGS_MODIFY_NT);
+    setFlagInfo(FLAG_RF, Modify, X86_EFLAGS_MODIFY_RF);
+    //None
+    setFlagInfo(FLAG_OF, Prior, X86_EFLAGS_PRIOR_OF);
+    setFlagInfo(FLAG_SF, Prior, X86_EFLAGS_PRIOR_SF);
+    setFlagInfo(FLAG_ZF, Prior, X86_EFLAGS_PRIOR_ZF);
+    setFlagInfo(FLAG_AF, Prior, X86_EFLAGS_PRIOR_AF);
+    setFlagInfo(FLAG_PF, Prior, X86_EFLAGS_PRIOR_PF);
+    setFlagInfo(FLAG_CF, Prior, X86_EFLAGS_PRIOR_CF);
+    setFlagInfo(FLAG_TF, Prior, X86_EFLAGS_PRIOR_TF);
+    setFlagInfo(FLAG_IF, Prior, X86_EFLAGS_PRIOR_IF);
+    setFlagInfo(FLAG_DF, Prior, X86_EFLAGS_PRIOR_DF);
+    setFlagInfo(FLAG_NT, Prior, X86_EFLAGS_PRIOR_NT);
+    //Write
+    setFlagInfo(FLAG_OF, Reset, X86_EFLAGS_RESET_OF);
+    setFlagInfo(FLAG_CF, Reset, X86_EFLAGS_RESET_CF);
+    setFlagInfo(FLAG_DF, Reset, X86_EFLAGS_RESET_DF);
+    setFlagInfo(FLAG_IF, Reset, X86_EFLAGS_RESET_IF);
+    setFlagInfo(FLAG_SF, Reset, X86_EFLAGS_RESET_SF);
+    setFlagInfo(FLAG_AF, Reset, X86_EFLAGS_RESET_AF);
+    setFlagInfo(FLAG_TF, Reset, X86_EFLAGS_RESET_TF);
+    setFlagInfo(FLAG_NT, Reset, X86_EFLAGS_RESET_NT);
+    setFlagInfo(FLAG_PF, Reset, X86_EFLAGS_RESET_PF);
+    //Write
+    setFlagInfo(FLAG_CF, Set, X86_EFLAGS_SET_CF);
+    setFlagInfo(FLAG_DF, Set, X86_EFLAGS_SET_DF);
+    setFlagInfo(FLAG_IF, Set, X86_EFLAGS_SET_IF);
+    //Read
+    setFlagInfo(FLAG_OF, Test, X86_EFLAGS_TEST_OF);
+    setFlagInfo(FLAG_SF, Test, X86_EFLAGS_TEST_SF);
+    setFlagInfo(FLAG_ZF, Test, X86_EFLAGS_TEST_ZF);
+    setFlagInfo(FLAG_PF, Test, X86_EFLAGS_TEST_PF);
+    setFlagInfo(FLAG_CF, Test, X86_EFLAGS_TEST_CF);
+    setFlagInfo(FLAG_NT, Test, X86_EFLAGS_TEST_NT);
+    setFlagInfo(FLAG_DF, Test, X86_EFLAGS_TEST_DF);
+    //None
+    setFlagInfo(FLAG_OF, Undefined, X86_EFLAGS_UNDEFINED_OF);
+    setFlagInfo(FLAG_SF, Undefined, X86_EFLAGS_UNDEFINED_SF);
+    setFlagInfo(FLAG_ZF, Undefined, X86_EFLAGS_UNDEFINED_ZF);
+    setFlagInfo(FLAG_PF, Undefined, X86_EFLAGS_UNDEFINED_PF);
+    setFlagInfo(FLAG_AF, Undefined, X86_EFLAGS_UNDEFINED_AF);
+    setFlagInfo(FLAG_CF, Undefined, X86_EFLAGS_UNDEFINED_CF);
+#undef setFlagInfo
+}
+
+const char * Capstone::FlagName(Flag flag) const
+{
+    switch(flag)
+    {
+    case FLAG_AF: return "AF";
+    case FLAG_CF: return "CF";
+    case FLAG_SF: return "SF";
+    case FLAG_ZF: return "ZF";
+    case FLAG_PF: return "PF";
+    case FLAG_OF: return "OF";
+    case FLAG_TF: return "TF";
+    case FLAG_IF: return "IF";
+    case FLAG_DF: return "DF";
+    case FLAG_NT: return "NT";
+    case FLAG_RF: return "RF";
+    default: return nullptr;
+    }
+}

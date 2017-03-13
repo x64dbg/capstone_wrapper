@@ -44,8 +44,7 @@ public:
     static bool IsBranchGoingToExecute(x86_insn id, size_t cflags, size_t ccx);
     bool IsConditionalGoingToExecute(size_t cflags, size_t ccx) const;
     static bool IsConditionalGoingToExecute(x86_insn id, size_t cflags, size_t ccx);
-    void RegInfo(uint8_t info[X86_REG_ENDING]) const;
-
+    
     enum RegInfoAccess
     {
         None = 0,
@@ -54,6 +53,37 @@ public:
         Implicit = 1 << 2,
         Explicit = 1 << 3
     };
+
+    enum Flag
+    {
+        FLAG_INVALID,
+        FLAG_AF,
+        FLAG_CF,
+        FLAG_SF,
+        FLAG_ZF,
+        FLAG_PF,
+        FLAG_OF,
+        FLAG_TF,
+        FLAG_IF,
+        FLAG_DF,
+        FLAG_NT,
+        FLAG_RF,
+        FLAG_ENDING
+    };
+
+    enum FlagInfoAccess
+    {
+        Modify = 1 << 0,
+        Prior = 1 << 1,
+        Reset = 1 << 2,
+        Set = 1 << 3,
+        Test = 1 << 4,
+        Undefined = 1 << 5
+    };
+    
+    void RegInfo(uint8_t info[X86_REG_ENDING]) const;
+    void FlagInfo(uint8_t info[FLAG_ENDING]) const;
+    const char* FlagName(Flag flag) const;
 
 private:
     static csh mHandle;
