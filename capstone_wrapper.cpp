@@ -669,3 +669,55 @@ bool Capstone::IsConditionalGoingToExecute(x86_insn id, size_t cflags, size_t cc
         return true;
     }
 }
+
+void Capstone::RegExplicitReadWrite(x86_reg read[32], x86_reg write[32]) const
+{
+#define add(arr, ct, val) if(val != X86_REG_INVALID) arr[ct++] = val
+    int ri = 0, wi = 0;
+    for(int i = 0; i < OpCount(); i++)
+    {
+        const auto & op = x86().operands[i];
+        switch(op.type)
+        {
+        case X86_OP_REG:
+            if((op.access & CS_AC_READ) == CS_AC_READ)
+                add(read, ri, op.reg);
+            if((op.access & CS_AC_WRITE) == CS_AC_WRITE)
+                add(write, wi, op.reg);
+            break;
+
+        case X86_OP_MEM:
+        {
+            if(op.mem.segment == X86_REG_INVALID)
+            {
+                switch(op.mem.base)
+                {
+#ifdef _WIN64
+                case X86_REG_RSP:
+                case X86_REG_RBP:
+#else //x86
+                case X86_REG_ESP:
+                case X86_REG_EBP:
+#endif //_WIN64
+                    add(read, ri, X86_REG_SS);
+                    break;
+                default:
+                    add(read, ri, X86_REG_DS);
+                    break;
+                }
+            }
+            else
+                add(read, ri, op.mem.segment);
+            add(read, ri, op.mem.base);
+            add(read, ri, op.mem.index);
+        }
+        break;
+
+        default:
+            break;
+        }
+    }
+    read[ri] = X86_REG_INVALID;
+    write[wi] = X86_REG_INVALID;
+#undef add
+}
