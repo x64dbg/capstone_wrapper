@@ -242,6 +242,7 @@ std::string Capstone::InstructionText(bool replaceRipRelative) const
         result += " ";
         result += mInstr->op_str;
     }
+#ifdef _WIN64
     if(replaceRipRelative)
     {
         //replace [rip +/- 0x?] with the actual address
@@ -265,6 +266,7 @@ std::string Capstone::InstructionText(bool replaceRipRelative) const
             result.replace(found + 1, ripStr.length(), buf);
         }
     }
+#endif //_WIN64
     return result;
 }
 
