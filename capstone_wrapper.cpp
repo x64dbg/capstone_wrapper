@@ -163,6 +163,8 @@ std::string Capstone::OperandText(int opindex) const
                     result += operatorText;
                 result += temp;
             }
+            if(!mem.disp && !mem.base && !mem.index)
+                result += '0';
         }
     }
     break;
