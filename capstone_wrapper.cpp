@@ -4,6 +4,12 @@
 csh Capstone::mHandle = 0;
 bool Capstone::mInitialized = false;
 
+static void customMnem(csh handle, x86_insn mnem, const char* alias)
+{
+    cs_opt_mnem om = { mnem, alias };
+    cs_option(handle, CS_OPT_MNEMONIC, (size_t)&om);
+}
+
 void Capstone::GlobalInitialize()
 {
     if(!mInitialized)
@@ -15,6 +21,8 @@ void Capstone::GlobalInitialize()
         cs_open(CS_ARCH_X86, CS_MODE_32, &mHandle);
 #endif //_WIN64
         cs_option(mHandle, CS_OPT_DETAIL, CS_OPT_ON);
+        customMnem(mHandle, X86_INS_PUSHAL, "pushad");
+        customMnem(mHandle, X86_INS_POPAL, "popad");
     }
 }
 
