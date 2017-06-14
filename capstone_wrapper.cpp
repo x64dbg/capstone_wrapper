@@ -6,7 +6,7 @@ bool Capstone::mInitialized = false;
 
 static void customMnem(csh handle, x86_insn mnem, const char* alias)
 {
-    cs_opt_mnem om = { mnem, alias };
+    cs_opt_mnem om = { (unsigned int)mnem, alias };
     cs_option(handle, CS_OPT_MNEMONIC, (size_t)&om);
 }
 
