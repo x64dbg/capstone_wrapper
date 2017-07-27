@@ -90,7 +90,27 @@ bool Capstone::Success() const
 
 const char* Capstone::RegName(x86_reg reg) const
 {
-    return cs_reg_name(mHandle, reg);
+    switch(reg)
+    {
+    case X86_REG_ST0:
+        return "st(0)";
+    case X86_REG_ST1:
+        return "st(1)";
+    case X86_REG_ST2:
+        return "st(2)";
+    case X86_REG_ST3:
+        return "st(3)";
+    case X86_REG_ST4:
+        return "st(4)";
+    case X86_REG_ST5:
+        return "st(5)";
+    case X86_REG_ST6:
+        return "st(6)";
+    case X86_REG_ST7:
+        return "st(7)";
+    default:
+        return cs_reg_name(mHandle, reg);
+    }
 }
 
 bool Capstone::InGroup(cs_group_type group) const
